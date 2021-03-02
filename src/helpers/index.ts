@@ -1,0 +1,1 @@
+export {createTypedRouterConfig} from './createTypedRouterConfig';
