@@ -1,11 +1,17 @@
 import {generatePath} from 'react-router';
 
-import {TGetAllPathNames, IRoute, TFilterComplexPaths, KEY_CONFIG_SEPARATOR, IBaseRoute} from '../types/router';
+import {TGetAllPathNames, TFilterComplexPaths, KEY_CONFIG_SEPARATOR, IBaseRoute} from '../types/router';
 import {UnionToIntersection} from '../types/service';
 
 import {joinTwoPathsInRouter} from './joinTwoPathsInRouter';
 
-export const createTypedRouterConfig = <Config extends Record<string, IBaseRoute>>(config: Config) => {
+export const createTypedRouterConfig = <
+  Config extends Record<string, IBaseRoute>,
+  AdditionalRouteProps extends Record<string, any>
+>(
+  config: Config,
+  additionalRouteProps: Record<keyof AdditionalRouteProps, true>
+) => {
   // конфиг видa: {"path.to.route": accumulated/path}
   type TFlatRouterConfig = UnionToIntersection<TGetAllPathNames<Config>>;
   // конфиг для генерации динамических роутов
@@ -19,21 +25,30 @@ export const createTypedRouterConfig = <Config extends Record<string, IBaseRoute
   // названия путей без параметров
   type TSimpleConfigPathsToRoute = Exclude<TAllConfigKeysToRoute, TComplexConfigPathsToRoute>;
 
+  const additionalRoutePropKeys = Object.keys(additionalRouteProps) as Array<keyof typeof additionalRouteProps>;
+
   const getFlatRouterConfig = (
-    config: Record<string, IRoute>,
+    config: Record<string, IBaseRoute>,
     keyAcc = '',
     pathAcc = '',
-    result = {} as Record<TAllConfigKeysToRoute, {path: string; isPrivate?: boolean}>
+    result = {} as Record<TAllConfigKeysToRoute, {path: string} & AdditionalRouteProps>
   ) => {
     for (const key in config) {
-      const currentConfig = config[key];
+      const currentConfig = config[key] as IBaseRoute & AdditionalRouteProps;
       const accumulatedPath = joinTwoPathsInRouter(pathAcc, currentConfig.path);
       const accumulatedConfigKey = `${keyAcc}${key}` as TAllConfigKeysToRoute;
 
-      result[accumulatedConfigKey] = {
-        path: accumulatedPath,
-        isPrivate: currentConfig.isPrivate,
-      };
+      result[accumulatedConfigKey] = {} as {path: string} & AdditionalRouteProps;
+
+      additionalRoutePropKeys.forEach((propKey) => {
+        if (propKey === 'children') {
+          throw new Error('Additional route properties can not have propery with name `children`');
+        }
+
+        result[accumulatedConfigKey][propKey] = currentConfig[propKey];
+      });
+
+      result[accumulatedConfigKey].path = accumulatedPath;
 
       if (currentConfig.children) {
         getFlatRouterConfig(
@@ -53,6 +68,7 @@ export const createTypedRouterConfig = <Config extends Record<string, IBaseRoute
   /** Получить полный путь до роута по ключу */
   const getRoutePath = (configKey: TAllConfigKeysToRoute) => flatRouterConfig[configKey].path;
 
+  /** Получить конфиг роута по пути */
   const getRouteConfigByPath = (accumulatedPath: string) => {
     for (const key in flatRouterConfig) {
       const routeConfig = flatRouterConfig[key as TAllConfigKeysToRoute];

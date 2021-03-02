@@ -6,6 +6,11 @@ const routerConfig = {
     children: {
       super: {
         path: '/kek',
+        children: {
+          littleDinamicRoute: {
+            path: '/dinamic/:dinamicId',
+          },
+        },
       },
     },
   },
@@ -14,4 +19,11 @@ const routerConfig = {
   },
 } as const;
 
-export const {getLink, getRoutePath, getRouteConfigByPath} = createTypedRouterConfig(routerConfig);
+type TAdditionalRouteProps = {
+  isPrivate?: boolean;
+};
+
+export const {getLink, getRoutePath, getRouteConfigByPath} = createTypedRouterConfig<
+  typeof routerConfig,
+  TAdditionalRouteProps
+>(routerConfig, {isPrivate: true});

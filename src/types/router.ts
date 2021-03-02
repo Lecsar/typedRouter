@@ -3,16 +3,10 @@ import {ExcludeKeysFromRecord, UnionToIntersection} from './service';
 
 export interface IBaseRoute {
   path: string;
-  children?: Record<string, IRoute>;
+  children?: Record<string, IBaseRoute>;
 }
 
-// в конфиге роута мб любые свойста
-export interface IRoute extends IBaseRoute {
-  //   для примера
-  isPrivate?: boolean;
-}
-
-type HasChildren<T> = T extends Record<string, IRoute> ? true : false;
+type HasChildren<T> = T extends Record<string, IBaseRoute> ? true : false;
 type CheckIsComplexPath<Path extends string> = keyof ExtractRouteParams<Path> extends never ? false : true;
 type TDeleteBooleanValueFromConfig<T extends Record<string, number | string | boolean | undefined>> = {
   [key in keyof T]: number | string;
@@ -24,7 +18,7 @@ type TSeparator = typeof KEY_CONFIG_SEPARATOR;
 
 // получить название полного пути до каждого роута с сохранением адреса до него
 export type TGetAllPathNames<
-  Config extends {[x: string]: IRoute},
+  Config extends {[x: string]: IBaseRoute},
   KeyAcc extends string = '',
   PathAcc extends string = ''
 > = {
