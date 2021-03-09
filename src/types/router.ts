@@ -1,5 +1,5 @@
 import {ExtractRouteParams} from 'react-router';
-import {ExcludeKeysFromRecord, UnionToIntersection} from './service';
+import {ExcludeKeysFromRecord} from './service';
 
 export interface IBaseRoute {
   path: string;

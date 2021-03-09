@@ -1,11 +1,11 @@
-import React, {StrictMode} from 'react';
+import {StrictMode} from 'react';
 import ReactDOM from 'react-dom';
 
-import {Example} from './Example';
+import {ExampleApp} from './ExampleApp';
 
 ReactDOM.render(
   <StrictMode>
-    <Example />
+    <ExampleApp />
   </StrictMode>,
   document.getElementById('root')
 );
