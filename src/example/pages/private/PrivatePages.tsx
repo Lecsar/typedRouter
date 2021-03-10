@@ -19,7 +19,7 @@ export const PrivatePages = () => {
             <Link to={getLink('private.posts')}>Posts list</Link>
           </li>
           <li>
-            <Link to={getLink('private.posts.item', {id: 10})}>Post item</Link>
+            <Link to={getLink('private.posts.item', {id: postId})}>Post item</Link>
 
             <div>
               <label htmlFor="postIdInput">PostId: </label>
@@ -40,6 +40,14 @@ export const PrivatePages = () => {
 
       <Route path={getRoutePath('private.posts.item')}>
         <PostItem />
+      </Route>
+
+      <Route path={getRoutePath('private.users')} exact>
+        <h1>Список пользователей</h1>
+      </Route>
+
+      <Route path={getRoutePath('private.users.item')}>
+        <h1>Информация по конкретному пользователю</h1>
       </Route>
     </Switch>
   );

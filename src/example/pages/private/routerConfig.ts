@@ -4,9 +4,18 @@ export const privateRouterConfig = {
     isPrivate: true,
 
     children: {
+      users: {
+        path: '/users',
+
+        children: {
+          item: {
+            path: '/:id',
+          },
+        },
+      },
+
       posts: {
         path: '/posts',
-        isPrivate: true,
 
         children: {
           item: {

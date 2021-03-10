@@ -4,7 +4,6 @@ import {PrivatePages} from './pages/private';
 import {Route, getLink, getRoutePath} from './router';
 import {QueryClient, QueryClientProvider} from 'react-query';
 
-// Create a client
 const queryClient = new QueryClient();
 
 export const ExampleApp = () => {
